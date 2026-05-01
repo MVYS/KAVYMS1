@@ -1,8 +1,18 @@
 ---
-// Google Translate website widget — drop-in language switcher.
-// Translates English source to Telugu and Kannada (extend `includedLanguages` to add more).
+// Custom language dropdown that drives the Google Translate engine via the `googtrans`
+// cookie. The Google widget itself is loaded but kept hidden — we only use its
+// translation pipeline, not its UI.
 ---
-<div id="google_translate_element"></div>
+<div class="lang-switcher notranslate" translate="no">
+  <span class="lang-icon" aria-hidden="true">🌐</span>
+  <select id="lang-select" class="lang-select" aria-label="Select language">
+    <option value="en">English</option>
+    <option value="te">తెలుగు</option>
+    <option value="kn">ಕನ್ನಡ</option>
+    <option value="hi">हिन्दी</option>
+  </select>
+</div>
+<div id="google_translate_element" style="display:none"></div>
 
 <script is:inline>
   function googleTranslateElementInit() {
@@ -10,7 +20,6 @@
       {
         pageLanguage: 'en',
         includedLanguages: 'en,te,kn,hi',
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
         autoDisplay: false,
       },
       'google_translate_element'
@@ -18,3 +27,24 @@
   }
 </script>
 <script is:inline src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
+
+<script>
+  const sel = document.getElementById('lang-select') as HTMLSelectElement | null;
+  if (sel) {
+    // Read the active language from the googtrans cookie (defaults to 'en').
+    const match = document.cookie.match(/(?:^|;\s*)googtrans=\/[^/]+\/([^;]+)/);
+    sel.value = match ? match[1] : 'en';
+
+    sel.addEventListener('change', () => {
+      const lang = sel.value;
+      // Clear any prior googtrans cookie variants, then set the new one.
+      const expire = 'expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = `googtrans=; path=/; ${expire}`;
+      document.cookie = `googtrans=; ${expire}`;
+      if (lang !== 'en') {
+        document.cookie = `googtrans=/en/${lang}; path=/`;
+      }
+      location.reload();
+    });
+  }
+</script>
