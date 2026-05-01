@@ -46,9 +46,10 @@
 
           if (isTruthy(r.Dismiss)) {
             const btn = document.createElement('button');
-            btn.className = 'banner-close';
+            btn.className = 'banner-close notranslate';
             btn.setAttribute('aria-label', 'Dismiss');
-            btn.textContent = '✕';
+            btn.setAttribute('translate', 'no');
+            // Glyph is rendered via CSS ::before so translation engines can't duplicate it.
             btn.addEventListener('click', () => {
               dismiss(hashMessage(r.Message!));
               div.remove();

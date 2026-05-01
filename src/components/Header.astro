@@ -13,13 +13,13 @@ const link = (p: string) => `${base}${p}`.replace(/\/+/g, '/');
       </span>
     </a>
 
-    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" data-nav-toggle>☰</button>
+    <button class="nav-toggle notranslate" translate="no" aria-label="Toggle navigation" aria-expanded="false" data-nav-toggle></button>
 
     <nav class="nav" id="primary-nav">
       <a href={base}>Main Page</a>
 
       <div class="nav-item" data-dropdown>
-        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">KAVYMS ▾</button>
+        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">KAVYMS</button>
         <div class="dropdown" role="menu">
           <a href={link('team')}>Team</a>
           <a href={link('past-team')}>Past Team</a>
@@ -30,7 +30,7 @@ const link = (p: string) => `${base}${p}`.replace(/\/+/g, '/');
       </div>
 
       <div class="nav-item" data-dropdown>
-        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">Information ▾</button>
+        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">Information</button>
         <div class="dropdown" role="menu">
           <a href={link('temples')}>Vasavi Temples</a>
           <a href={link('hostels')}>Vasavi Hostels</a>
