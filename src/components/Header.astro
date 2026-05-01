@@ -59,7 +59,7 @@ const link = (p: string) => `${base}${p}`.replace(/\/+/g, '/');
   document.querySelectorAll('[data-dropdown]').forEach((item) => {
     const trigger = item.querySelector('.nav-trigger');
     trigger?.addEventListener('click', (e) => {
-      if (window.matchMedia('(max-width: 880px)').matches) {
+      if (window.matchMedia('(max-width: 1024px)').matches) {
         e.preventDefault();
         item.classList.toggle('open');
         const expanded = item.classList.contains('open');
@@ -71,7 +71,7 @@ const link = (p: string) => `${base}${p}`.replace(/\/+/g, '/');
   // Close mobile menu when a real link is clicked.
   nav?.querySelectorAll('a').forEach((a) => {
     a.addEventListener('click', () => {
-      if (window.matchMedia('(max-width: 880px)').matches) {
+      if (window.matchMedia('(max-width: 1024px)').matches) {
         nav.classList.remove('open');
         toggle?.setAttribute('aria-expanded', 'false');
       }

@@ -201,11 +201,12 @@ main {
 }
 .dropdown a:hover { background: rgba(255, 107, 53, 0.1); }
 
-@media (max-width: 880px) {
+@media (max-width: 1024px) {
   .nav-toggle { display: inline-flex; }
   .nav {
-    position: fixed;
-    top: var(--header-h);
+    display: none;
+    position: absolute;
+    top: 100%;
     left: 0; right: 0;
     background: var(--color-cream);
     flex-direction: column;
@@ -214,12 +215,10 @@ main {
     gap: 4px;
     border-bottom: 1px solid var(--color-border);
     box-shadow: var(--shadow-md);
-    transform: translateY(-110%);
-    transition: transform .25s ease;
     max-height: calc(100dvh - var(--header-h));
     overflow-y: auto;
   }
-  .nav.open { transform: translateY(0); }
+  .nav.open { display: flex; }
   .nav a, .nav .nav-trigger { padding: 12px 14px; font-size: 1rem; width: 100%; justify-content: space-between; }
   .nav-item .dropdown {
     position: static;
@@ -468,7 +467,7 @@ main {
 .header-socials a svg { width: 36px; height: 36px; fill: currentColor; display: block; }
 .header-socials a:hover { background: var(--color-saffron); color: #fff; transform: translateY(-1px); }
 .header-socials:empty { display: none; }
-@media (max-width: 880px) {
+@media (max-width: 1024px) {
   .header-socials {
     border-left: 0;
     padding-left: 0;
