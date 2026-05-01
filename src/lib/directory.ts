@@ -341,8 +341,8 @@ async function renderMap(container: HTMLElement, rows: Row[]): Promise<void> {
       if (r.Locality) lines.push(`<div style="color:#FF6B35;font-weight:600;font-size:.85rem;text-transform:uppercase;letter-spacing:.04em">${escape(r.Locality)}</div>`);
       if (addr) lines.push(`<div style="margin-top:4px">📍 ${escape(addr)}</div>`);
       if (r.Description) lines.push(`<div style="margin-top:4px;color:#5a4a3e">${escape(r.Description)}</div>`);
-      if (r.Phone) lines.push(`<div style="margin-top:4px">📞 <a href="tel:${escape((r.Phone || '').replace(/\s+/g, ''))}">${escape(r.Phone)}</a></div>`);
-      if (r.Email) lines.push(`<div style="margin-top:2px">📧 <a href="mailto:${escape(r.Email)}">${escape(r.Email)}</a></div>`);
+      if (r.Phone) lines.push(`<div style="margin-top:4px">📞 <a href="tel:${escape((r.Phone || '').replace(/\s+/g, ''))}" class="notranslate" translate="no">${escape(r.Phone)}</a></div>`);
+      if (r.Email) lines.push(`<div style="margin-top:2px">📧 <a href="mailto:${escape(r.Email)}" class="notranslate" translate="no">${escape(r.Email)}</a></div>`);
       lines.push(`<div style="margin-top:10px"><a href="${escape(directions)}" target="_blank" rel="noopener" style="display:inline-block;background:linear-gradient(90deg,#FF6B35,#F4A82B);color:#fff;padding:6px 12px;border-radius:999px;text-decoration:none;font-weight:600;font-size:.85rem">Get Directions →</a></div>`);
       marker.bindPopup(lines.join(''), { maxWidth: 280 });
     }

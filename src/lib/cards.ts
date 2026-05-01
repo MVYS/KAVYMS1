@@ -110,8 +110,8 @@ export function renderPlaceCard(r: PlaceRow): HTMLElement {
     el(
       'div',
       { class: 'card-meta' },
-      r.Phone ? el('a', { href: `tel:${r.Phone.replace(/\s+/g, '')}` }, `📞 ${r.Phone}`) : null,
-      r.Email ? el('a', { href: `mailto:${r.Email}` }, `📧 ${r.Email}`) : null
+      r.Phone ? el('a', { href: `tel:${r.Phone.replace(/\s+/g, '')}`, class: 'notranslate', translate: 'no' }, `📞 ${r.Phone}`) : null,
+      r.Email ? el('a', { href: `mailto:${r.Email}`, class: 'notranslate', translate: 'no' }, `📧 ${r.Email}`) : null
     ),
     directionsHref
       ? el('a', {

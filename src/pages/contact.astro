@@ -25,15 +25,17 @@ import Base from '../layouts/Base.astro';
       if (c.primaryPhone) {
         const a = document.createElement('a');
         a.href = `tel:${c.primaryPhone.replace(/\s+/g, '')}`;
-        a.className = 'contact-row';
-        a.innerHTML = `<span class="contact-icon">📞</span><span><span class="contact-label">Phone</span><span class="contact-value">${escape(c.primaryPhone)}</span></span>`;
+        a.className = 'contact-row contact-row-phone notranslate';
+        a.setAttribute('translate', 'no');
+        a.innerHTML = `<span class="contact-value">${escape(c.primaryPhone)}</span>`;
         items.push(a);
       }
       if (c.primaryEmail) {
         const a = document.createElement('a');
         a.href = `mailto:${c.primaryEmail}`;
-        a.className = 'contact-row';
-        a.innerHTML = `<span class="contact-icon">📧</span><span><span class="contact-label">Email</span><span class="contact-value">${escape(c.primaryEmail)}</span></span>`;
+        a.className = 'contact-row contact-row-email notranslate';
+        a.setAttribute('translate', 'no');
+        a.innerHTML = `<span class="contact-value">${escape(c.primaryEmail)}</span>`;
         items.push(a);
       }
       if (c.address) {
@@ -42,8 +44,8 @@ import Base from '../layouts/Base.astro';
         a.href = mapsUrl;
         a.target = '_blank';
         a.rel = 'noopener';
-        a.className = 'contact-row';
-        a.innerHTML = `<span class="contact-icon">📍</span><span><span class="contact-label">Address</span><span class="contact-value">${escape(c.address)}</span></span>`;
+        a.className = 'contact-row contact-row-address';
+        a.innerHTML = `<span class="contact-value">${escape(c.address)}</span>`;
         items.push(a);
       }
 

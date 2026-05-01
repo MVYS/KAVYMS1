@@ -20,7 +20,7 @@ const year = new Date().getFullYear();
       <div>
         <h4>Explore</h4>
         <ul>
-          <li><a href={base}>Home</a></li>
+          <li><a href={base}>Main Page</a></li>
           <li><a href={link('team')}>Team</a></li>
           <li><a href={link('past-team')}>Past Team</a></li>
           <li><a href={link('achievements')}>Achievements</a></li>
@@ -68,8 +68,8 @@ const year = new Date().getFullYear();
       if (contactRoot) {
         contactRoot.innerHTML = '';
         const items: [string, string][] = [];
-        if (c.primaryEmail) items.push(['📧', `<a href="mailto:${c.primaryEmail}">${c.primaryEmail}</a>`]);
-        if (c.primaryPhone) items.push(['📞', `<a href="tel:${c.primaryPhone.replace(/\s+/g, '')}">${c.primaryPhone}</a>`]);
+        if (c.primaryEmail) items.push(['📧', `<a href="mailto:${c.primaryEmail}" class="notranslate" translate="no">${c.primaryEmail}</a>`]);
+        if (c.primaryPhone) items.push(['📞', `<a href="tel:${c.primaryPhone.replace(/\s+/g, '')}" class="notranslate" translate="no">${c.primaryPhone}</a>`]);
         if (c.address) items.push(['📍', c.address]);
         if (items.length === 0) {
           contactRoot.innerHTML = '<li style="opacity:.7">Add primaryEmail / primaryPhone in SiteContent sheet</li>';

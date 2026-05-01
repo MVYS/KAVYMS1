@@ -712,6 +712,16 @@ body { top: 0 !important; }
   transition: background .15s ease, transform .15s ease;
 }
 .contact-row:hover { background: rgba(255, 107, 53, 0.18); transform: translateX(2px); }
+/* Icons rendered via CSS so translation engines (e.g. Google Translate Kannada)
+   can't see them and try to "translate" them. */
+.contact-row::before {
+  font-size: 1.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.contact-row-phone::before   { content: '📞'; }
+.contact-row-email::before   { content: '📧'; }
+.contact-row-address::before { content: '📍'; }
 .contact-icon { font-size: 1.4rem; }
 .contact-label {
   display: block;
