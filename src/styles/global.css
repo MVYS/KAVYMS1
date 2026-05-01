@@ -147,9 +147,25 @@ main {
   text-decoration: none;
   color: var(--color-maroon-dark);
 }
-.brand img { width: 44px; height: 44px; object-fit: contain; }
+.brand img { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; }
+.brand > span { min-width: 0; }
 .brand-text { font-family: var(--font-heading); font-weight: 700; font-size: 1.15rem; line-height: 1; }
-.brand-tag { display: block; font-size: .68rem; font-weight: 500; color: var(--color-text-soft); margin-top: 2px; letter-spacing: .05em; text-transform: uppercase; }
+.brand-tag {
+  display: block;
+  font-size: .68rem;
+  font-weight: 500;
+  color: var(--color-text-soft);
+  margin-top: 2px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 32ch;
+}
+@media (max-width: 600px) {
+  .brand-tag { display: none; }
+}
 
 .nav-toggle {
   display: none;
