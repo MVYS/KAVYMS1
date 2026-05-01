@@ -1,0 +1,67 @@
+---
+// Site-wide banner stack. Reads Banners sheet at runtime.
+// Active rule: Expiry blank OR Expiry >= today. Sorted by Order asc. Cap MAX_BANNERS.
+---
+<div class="container">
+  <div class="banner-stack" data-banner-stack></div>
+</div>
+
+<script>
+  import { fetchSheet } from '../lib/sheets';
+  import { hashMessage, isDismissed, dismiss } from '../lib/banner-store';
+  import { parseDate, todayStart, isTruthy } from '../lib/dom';
+  import { MAX_BANNERS } from '../config';
+
+  type BannerRow = { Message?: string; Order?: string; Dismiss?: string; Expiry?: string };
+
+  const root = document.querySelector<HTMLElement>('[data-banner-stack]');
+  if (root) {
+    fetchSheet<BannerRow>('banners')
+      .then((rows) => {
+        const today = todayStart();
+        const active = rows
+          .filter((r) => r.Message && r.Message.trim().length > 0)
+          .filter((r) => {
+            const exp = parseDate(r.Expiry);
+            return !exp || exp.getTime() >= today.getTime();
+          })
+          .filter((r) => {
+            if (!isTruthy(r.Dismiss)) return true;
+            return !isDismissed(hashMessage(r.Message!));
+          })
+          .sort((a, b) => Number(a.Order ?? 999) - Number(b.Order ?? 999))
+          .slice(0, MAX_BANNERS);
+
+        if (active.length === 0) { root.style.display = 'none'; return; }
+
+        root.innerHTML = '';
+        active.forEach((r, idx) => {
+          const div = document.createElement('div');
+          div.className = `banner priority-${Math.min(idx + 1, 4)}`;
+
+          const text = document.createElement('span');
+          text.className = 'banner-text';
+          text.textContent = r.Message!;
+          div.appendChild(text);
+
+          if (isTruthy(r.Dismiss)) {
+            const btn = document.createElement('button');
+            btn.className = 'banner-close';
+            btn.setAttribute('aria-label', 'Dismiss');
+            btn.textContent = '✕';
+            btn.addEventListener('click', () => {
+              dismiss(hashMessage(r.Message!));
+              div.remove();
+              if (root.children.length === 0) root.style.display = 'none';
+            });
+            div.appendChild(btn);
+          }
+          root.appendChild(div);
+        });
+      })
+      .catch(() => {
+        // Silently hide banners on registry/fetch failure — this is decoration, not core content.
+        root.style.display = 'none';
+      });
+  }
+</script>

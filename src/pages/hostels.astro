@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Vasavi Hostels" description="Directory of Vasavi hostels — search, filter and view on map.">
+  <h1 class="section-title">Vasavi Hostels</h1>
+  <p style="text-align:center;color:var(--color-text-soft);max-width:680px;margin:0 auto 24px">
+    Find a Vasavi hostel — search by name, filter by state or city, or switch to the map view.
+  </p>
+  <div data-directory>
+    <div class="state state-loading">Loading hostels…</div>
+  </div>
+</Base>
+
+<script>
+  import { mountDirectory } from '../lib/directory';
+  const root = document.querySelector<HTMLElement>('[data-directory]')!;
+  mountDirectory(root, { sheet: 'hostels', noun: 'hostel' });
+</script>

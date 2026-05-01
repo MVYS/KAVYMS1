@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Roadmap 2026-29" description="The KAVYMS roadmap and goals for 2026 to 2029.">
+  <h1 class="section-title">Roadmap 2026 – 2029</h1>
+  <p style="text-align:center;color:var(--color-text-soft);max-width:680px;margin:0 auto 32px">
+    What we are working towards over the coming years — grouped by year.
+  </p>
+  <div data-groups>
+    <div class="state state-loading">Loading roadmap…</div>
+  </div>
+</Base>
+
+<script>
+  import { fetchSheet } from '../lib/sheets';
+  import { renderRoadmapCard, groupByAsc, type RoadmapRow } from '../lib/cards';
+  import { el, showEmpty, showError, parseDate } from '../lib/dom';
+
+  const root = document.querySelector<HTMLElement>('[data-groups]')!;
+  fetchSheet<RoadmapRow>('roadmap')
+    .then((rows) => {
+      const filtered = rows.filter((r) => r.Roadmap);
+      if (filtered.length === 0) { showEmpty(root, 'Roadmap items will be published soon.'); return; }
+      const groups = groupByAsc(filtered, (r) => r.Year || '—');
+      root.innerHTML = '';
+      for (const [year, list] of groups) {
+        list.sort((a, b) => (parseDate(a.Date)?.getTime() ?? 0) - (parseDate(b.Date)?.getTime() ?? 0));
+        const wrap = el('div', { class: 'timeline-group' });
+        wrap.appendChild(el('div', { class: 'timeline-year' }, year));
+        const grid = el('div', { class: 'grid grid-wide' });
+        for (const r of list) grid.appendChild(renderRoadmapCard(r));
+        wrap.appendChild(grid);
+        root.appendChild(wrap);
+      }
+    })
+    .catch((e) => showError(root, e));
+</script>

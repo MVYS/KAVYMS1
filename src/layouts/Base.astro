@@ -1,0 +1,54 @@
+---
+import '../styles/global.css';
+import { pwaInfo } from 'virtual:pwa-info';
+import BackgroundWatermark from '../components/BackgroundWatermark.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Banner from '../components/Banner.astro';
+import { FALLBACK_SITE_NAME } from '../config';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = 'KAVYMS — Vasavi Youth community website' } = Astro.props;
+const fullTitle = title ? `${title} · ${FALLBACK_SITE_NAME}` : FALLBACK_SITE_NAME;
+const base = import.meta.env.BASE_URL;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#8b1538" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="apple-touch-icon" href={`${base}icons/icon.svg`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Noto+Sans+Telugu:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>{fullTitle}</title>
+    {pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} />}
+  </head>
+  <body>
+    <BackgroundWatermark />
+    <Banner />
+    <Header />
+    <main>
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+    <Footer />
+    <div class="mvys-watermark" aria-label="Website managed by Team MVYS">Website managed by Team MVYS</div>
+
+    <script>
+      import { registerSW } from 'virtual:pwa-register';
+      registerSW({ immediate: true });
+    </script>
+  </body>
+</html>

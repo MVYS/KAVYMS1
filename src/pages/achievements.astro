@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Achievements" description="Milestones and achievements of KAVYMS over the years.">
+  <h1 class="section-title">Achievements</h1>
+  <p style="text-align:center;color:var(--color-text-soft);max-width:680px;margin:0 auto 32px">
+    Milestones, recognitions and proud moments — grouped by year.
+  </p>
+  <div data-groups>
+    <div class="state state-loading">Loading achievements…</div>
+  </div>
+</Base>
+
+<script>
+  import { fetchSheet } from '../lib/sheets';
+  import { renderAchievementCard, groupByDesc, type AchievementRow } from '../lib/cards';
+  import { el, showEmpty, showError, parseDate } from '../lib/dom';
+
+  const root = document.querySelector<HTMLElement>('[data-groups]')!;
+  fetchSheet<AchievementRow>('achievements')
+    .then((rows) => {
+      const filtered = rows.filter((r) => r.Title);
+      if (filtered.length === 0) { showEmpty(root, 'No achievements published yet.'); return; }
+      const groups = groupByDesc(filtered, (r) => r.Year || '—');
+      root.innerHTML = '';
+      for (const [year, list] of groups) {
+        list.sort((a, b) => (parseDate(b.Date)?.getTime() ?? 0) - (parseDate(a.Date)?.getTime() ?? 0));
+        const wrap = el('div', { class: 'timeline-group' });
+        wrap.appendChild(el('div', { class: 'timeline-year' }, year));
+        const grid = el('div', { class: 'grid grid-wide' });
+        for (const r of list) grid.appendChild(renderAchievementCard(r));
+        wrap.appendChild(grid);
+        root.appendChild(wrap);
+      }
+    })
+    .catch((e) => showError(root, e));
+</script>

@@ -1,0 +1,22 @@
+{
+  "name": "kavyms-website",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.1.0",
+    "papaparse": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.3.15",
+    "@vite-pwa/astro": "^0.5.0",
+    "typescript": "^5.7.0",
+    "workbox-window": "^7.3.0"
+  }
+}

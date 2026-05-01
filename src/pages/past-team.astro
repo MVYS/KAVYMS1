@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Past Team" description="Past KAVYMS team, by year.">
+  <h1 class="section-title">Past Teams</h1>
+  <p style="text-align:center;color:var(--color-text-soft);max-width:680px;margin:0 auto 32px">
+    Members who served KAVYMS in previous years — grouped by year of service.
+  </p>
+  <div data-groups>
+    <div class="state state-loading">Loading past team…</div>
+  </div>
+</Base>
+
+<script>
+  import { fetchSheet } from '../lib/sheets';
+  import { renderTeamCard, groupByDesc, type TeamRow } from '../lib/cards';
+  import { el, showEmpty, showError, isTruthy } from '../lib/dom';
+
+  const root = document.querySelector<HTMLElement>('[data-groups]')!;
+  fetchSheet<TeamRow>('team')
+    .then((rows) => {
+      const past = rows.filter((r) => !isTruthy(r['Current Team']) && r.Name);
+      if (past.length === 0) { showEmpty(root, 'No past team members yet.'); return; }
+      const groups = groupByDesc(past, (r) => r.Year || '—');
+      root.innerHTML = '';
+      for (const [year, list] of groups) {
+        const wrap = document.createElement('div');
+        wrap.className = 'timeline-group';
+        wrap.appendChild(el('div', { class: 'timeline-year' }, year));
+        const grid = el('div', { class: 'grid' });
+        for (const r of list) grid.appendChild(renderTeamCard(r));
+        wrap.appendChild(grid);
+        root.appendChild(wrap);
+      }
+    })
+    .catch((e) => showError(root, e));
+</script>

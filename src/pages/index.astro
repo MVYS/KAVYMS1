@@ -1,0 +1,91 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
+const link = (p: string) => `${base}${p}`.replace(/\/+/g, '/');
+---
+<Base title="Home" description="KAVYMS — a Vasavi Youth community for connection, service, and welfare.">
+  <section class="hero">
+    <span class="pill" data-hero-pill>KAVYMS</span>
+    <h1 data-hero-title>A Vasavi Youth Community</h1>
+    <p class="lead" data-hero-subtitle>Welcome — explore our team, temples, hostels and welfare schemes.</p>
+    <div class="cta-row">
+      <a class="btn" href={link('team')}>Meet the Team</a>
+      <a class="btn btn-outline" style="background:rgba(255,255,255,.15);color:#fff !important;border-color:#fff" href={link('temples')}>Find a Temple</a>
+    </div>
+  </section>
+
+  <section class="about-block" data-about>
+    <h2 class="section-title">About KAVYMS</h2>
+    <p style="text-align:center;max-width:780px;margin:0 auto;color:var(--color-text-soft)">
+      Loading community information…
+    </p>
+  </section>
+
+  <section>
+    <h2 class="section-title">Recent Achievements</h2>
+    <div class="grid" data-recent></div>
+  </section>
+
+  <section style="margin-top:48px;text-align:center">
+    <h2 class="section-title">Quick Links</h2>
+    <div class="cta-row">
+      <a class="btn" href={link('achievements')}>All Achievements</a>
+      <a class="btn" href={link('schemes')}>Welfare Schemes</a>
+      <a class="btn" href={link('roadmap')}>Roadmap 2026-29</a>
+      <a class="btn btn-outline" href={link('hostels')}>Vasavi Hostels</a>
+      <a class="btn btn-outline" href={link('contact')}>Contact Us</a>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { fetchSiteContent, fetchSheet } from '../lib/sheets';
+  import { renderAchievementCard, type AchievementRow } from '../lib/cards';
+  import { showEmpty, showError, parseDate } from '../lib/dom';
+
+  const aboutBlock = document.querySelector<HTMLElement>('[data-about]');
+  const recentRoot = document.querySelector<HTMLElement>('[data-recent]');
+
+  fetchSiteContent()
+    .then((c) => {
+      const pill = document.querySelector<HTMLElement>('[data-hero-pill]');
+      const title = document.querySelector<HTMLElement>('[data-hero-title]');
+      const subtitle = document.querySelector<HTMLElement>('[data-hero-subtitle]');
+      if (pill && c.fullForm) pill.textContent = `KAVYMS — ${c.fullForm}`;
+      else if (pill && c.siteName) pill.textContent = c.siteName;
+      if (title && c.heroTitle) title.textContent = c.heroTitle;
+      if (subtitle && (c.heroSubtitle || c.tagline)) subtitle.textContent = c.heroSubtitle || c.tagline;
+      if (aboutBlock && c.aboutUs) {
+        aboutBlock.innerHTML = '';
+        const h = document.createElement('h2');
+        h.className = 'section-title';
+        h.textContent = 'About KAVYMS';
+        const p = document.createElement('p');
+        p.style.cssText = 'text-align:center;max-width:780px;margin:0 auto;color:var(--color-text-soft);white-space:pre-wrap';
+        p.textContent = c.aboutUs;
+        aboutBlock.append(h, p);
+      }
+    })
+    .catch((e) => {
+      if (aboutBlock) showError(aboutBlock, e);
+    });
+
+  if (recentRoot) {
+    fetchSheet<AchievementRow>('achievements')
+      .then((rows) => {
+        const sorted = rows
+          .filter((r) => r.Title)
+          .sort((a, b) => {
+            const da = parseDate(a.Date)?.getTime() ?? 0;
+            const db = parseDate(b.Date)?.getTime() ?? 0;
+            if (db !== da) return db - da;
+            return Number(b.Year ?? 0) - Number(a.Year ?? 0);
+          })
+          .slice(0, 3);
+        if (sorted.length === 0) { showEmpty(recentRoot, 'No achievements published yet.'); return; }
+        recentRoot.innerHTML = '';
+        for (const r of sorted) recentRoot.appendChild(renderAchievementCard(r));
+      })
+      .catch((e) => showError(recentRoot, e));
+  }
+</script>

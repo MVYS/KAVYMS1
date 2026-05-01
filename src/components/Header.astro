@@ -1,0 +1,93 @@
+---
+import TranslateWidget from './TranslateWidget.astro';
+const base = import.meta.env.BASE_URL;
+const link = (p: string) => `${base}${p}`.replace(/\/+/g, '/');
+---
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href={base}>
+      <img src={`${base}logo.svg`} alt="KAVYMS logo" />
+      <span>
+        <span class="brand-text">KAVYMS</span>
+        <span class="brand-tag">Karnataka AryaVysya Yuvajana Mahasabha</span>
+      </span>
+    </a>
+
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" data-nav-toggle>☰</button>
+
+    <nav class="nav" id="primary-nav">
+      <a href={base}>Home</a>
+
+      <div class="nav-item" data-dropdown>
+        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">KAVYMS ▾</button>
+        <div class="dropdown" role="menu">
+          <a href={link('team')}>Team</a>
+          <a href={link('past-team')}>Past Team</a>
+          <a href={link('achievements')}>Achievements</a>
+          <a href={link('schemes')}>Schemes</a>
+          <a href={link('roadmap')}>Roadmap 2026-29</a>
+        </div>
+      </div>
+
+      <div class="nav-item" data-dropdown>
+        <button class="nav-trigger" aria-haspopup="true" aria-expanded="false">Information ▾</button>
+        <div class="dropdown" role="menu">
+          <a href={link('temples')}>Vasavi Temples</a>
+          <a href={link('hostels')}>Vasavi Hostels</a>
+        </div>
+      </div>
+
+      <a href={link('contact')}>Contact</a>
+
+      <div class="header-socials" data-header-socials aria-label="Social links"></div>
+      <TranslateWidget />
+    </nav>
+  </div>
+</header>
+
+<script>
+  import { renderSocials } from '../lib/socials';
+
+  const toggle = document.querySelector('[data-nav-toggle]');
+  const nav = document.getElementById('primary-nav');
+  toggle?.addEventListener('click', () => {
+    const isOpen = nav?.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(!!isOpen));
+  });
+
+  // Mobile: tap dropdown trigger to expand inline.
+  document.querySelectorAll('[data-dropdown]').forEach((item) => {
+    const trigger = item.querySelector('.nav-trigger');
+    trigger?.addEventListener('click', (e) => {
+      if (window.matchMedia('(max-width: 880px)').matches) {
+        e.preventDefault();
+        item.classList.toggle('open');
+        const expanded = item.classList.contains('open');
+        trigger.setAttribute('aria-expanded', String(expanded));
+      }
+    });
+  });
+
+  // Close mobile menu when a real link is clicked.
+  nav?.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => {
+      if (window.matchMedia('(max-width: 880px)').matches) {
+        nav.classList.remove('open');
+        toggle?.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+
+  // Mark active link.
+  const here = window.location.pathname.replace(/\/$/, '');
+  nav?.querySelectorAll('a').forEach((a) => {
+    const href = a.getAttribute('href')?.replace(/\/$/, '');
+    if (href && (here === href || (href !== '' && here.endsWith(href)))) {
+      a.classList.add('active');
+    }
+  });
+
+  // Populate social icons from SiteContent.
+  const socialsRoot = document.querySelector<HTMLElement>('[data-header-socials]');
+  if (socialsRoot) renderSocials(socialsRoot);
+</script>

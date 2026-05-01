@@ -1,0 +1,81 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Contact" description="Get in touch with KAVYMS — phone, email, address and social.">
+  <h1 class="section-title">Contact Us</h1>
+  <p style="text-align:center;color:var(--color-text-soft);max-width:680px;margin:0 auto 32px">
+    Reach out to the KAVYMS community team.
+  </p>
+  <div class="contact-card-wrap" data-contact>
+    <div class="state state-loading">Loading contact details…</div>
+  </div>
+</Base>
+
+<script>
+  import { fetchSiteContent } from '../lib/sheets';
+  import { renderSocials } from '../lib/socials';
+  import { showError, el } from '../lib/dom';
+
+  const root = document.querySelector<HTMLElement>('[data-contact]')!;
+
+  fetchSiteContent()
+    .then((c) => {
+      const items: HTMLElement[] = [];
+
+      if (c.primaryPhone) {
+        const a = document.createElement('a');
+        a.href = `tel:${c.primaryPhone.replace(/\s+/g, '')}`;
+        a.className = 'contact-row';
+        a.innerHTML = `<span class="contact-icon">📞</span><span><span class="contact-label">Phone</span><span class="contact-value">${escape(c.primaryPhone)}</span></span>`;
+        items.push(a);
+      }
+      if (c.primaryEmail) {
+        const a = document.createElement('a');
+        a.href = `mailto:${c.primaryEmail}`;
+        a.className = 'contact-row';
+        a.innerHTML = `<span class="contact-icon">📧</span><span><span class="contact-label">Email</span><span class="contact-value">${escape(c.primaryEmail)}</span></span>`;
+        items.push(a);
+      }
+      if (c.address) {
+        const mapsUrl = c.addressMapsUrl || `https://www.google.com/maps/search/${encodeURIComponent(c.address)}`;
+        const a = document.createElement('a');
+        a.href = mapsUrl;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.className = 'contact-row';
+        a.innerHTML = `<span class="contact-icon">📍</span><span><span class="contact-label">Address</span><span class="contact-value">${escape(c.address)}</span></span>`;
+        items.push(a);
+      }
+
+      root.innerHTML = '';
+
+      const card = el('article', { class: 'contact-card' });
+      const title = el('h2', { class: 'contact-name' }, c.siteName || 'KAVYMS');
+      card.appendChild(title);
+      if (c.tagline) card.appendChild(el('p', { class: 'contact-tagline' }, c.tagline));
+
+      if (items.length === 0) {
+        card.appendChild(el(
+          'div',
+          { class: 'state state-empty' },
+          'Add primaryPhone, primaryEmail and address to the SiteContent sheet to populate this page.'
+        ));
+      } else {
+        const list = el('div', { class: 'contact-list' });
+        items.forEach((it) => list.appendChild(it));
+        card.appendChild(list);
+      }
+
+      const socials = el('div', { class: 'contact-socials socials' });
+      card.appendChild(el('div', { class: 'contact-divider' }));
+      card.appendChild(el('p', { style: 'margin:0 0 6px;color:var(--color-text-soft);font-size:.9rem;text-align:center' }, 'Find us online'));
+      card.appendChild(socials);
+      root.appendChild(card);
+      renderSocials(socials);
+    })
+    .catch((e) => showError(root, e));
+
+  function escape(s: string): string {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+</script>

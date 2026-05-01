@@ -1,0 +1,88 @@
+---
+const base = import.meta.env.BASE_URL;
+const link = (p: string) => `${base}${p}`.replace(/\/+/g, '/');
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>KAVYMS</h4>
+        <p style="color:#fce6c8;opacity:.85;margin:0">
+          A community-driven Vasavi Youth initiative.
+          Connecting members, temples, and welfare schemes.
+        </p>
+        <div class="socials" data-footer-socials>
+          <!-- Populated from SiteContent -->
+        </div>
+      </div>
+
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href={base}>Home</a></li>
+          <li><a href={link('team')}>Team</a></li>
+          <li><a href={link('past-team')}>Past Team</a></li>
+          <li><a href={link('achievements')}>Achievements</a></li>
+          <li><a href={link('schemes')}>Schemes</a></li>
+          <li><a href={link('roadmap')}>Roadmap 2026-29</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Information</h4>
+        <ul>
+          <li><a href={link('temples')}>Vasavi Temples</a></li>
+          <li><a href={link('hostels')}>Vasavi Hostels</a></li>
+          <li><a href={link('contact')}>Contact</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Get in touch</h4>
+        <ul data-footer-contact>
+          <li style="opacity:.7">Loading…</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="opacity:.6;font-size:.8rem;text-align:center;margin-top:32px;margin-bottom:0">
+      © {year} <span data-footer-sitename>KAVYMS</span>
+    </p>
+  </div>
+</footer>
+
+<script>
+  import { fetchSiteContent } from '../lib/sheets';
+  import { renderSocials } from '../lib/socials';
+
+  const socialsRoot = document.querySelector<HTMLElement>('[data-footer-socials]');
+  const contactRoot = document.querySelector<HTMLElement>('[data-footer-contact]');
+  const siteNameEl = document.querySelector<HTMLElement>('[data-footer-sitename]');
+
+  if (socialsRoot) renderSocials(socialsRoot);
+
+  fetchSiteContent()
+    .then((c) => {
+      if (siteNameEl && c.siteName) siteNameEl.textContent = c.siteName;
+      if (contactRoot) {
+        contactRoot.innerHTML = '';
+        const items: [string, string][] = [];
+        if (c.primaryEmail) items.push(['📧', `<a href="mailto:${c.primaryEmail}">${c.primaryEmail}</a>`]);
+        if (c.primaryPhone) items.push(['📞', `<a href="tel:${c.primaryPhone.replace(/\s+/g, '')}">${c.primaryPhone}</a>`]);
+        if (c.address) items.push(['📍', c.address]);
+        if (items.length === 0) {
+          contactRoot.innerHTML = '<li style="opacity:.7">Add primaryEmail / primaryPhone in SiteContent sheet</li>';
+        } else {
+          for (const [icon, html] of items) {
+            const li = document.createElement('li');
+            li.innerHTML = `${icon} ${html}`;
+            contactRoot.appendChild(li);
+          }
+        }
+      }
+    })
+    .catch(() => {
+      if (contactRoot) contactRoot.innerHTML = '<li style="opacity:.7">Configure the sheet registry to load contact info</li>';
+    });
+</script>

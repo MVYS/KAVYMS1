@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Schemes" description="Welfare schemes available to the KAVYMS Vasavi community.">
+  <h1 class="section-title">Welfare Schemes</h1>
+  <p style="text-align:center;color:var(--color-text-soft);max-width:680px;margin:0 auto 32px">
+    Active welfare schemes — expired schemes are hidden automatically.
+  </p>
+  <div class="grid grid-wide" data-grid>
+    <div class="state state-loading">Loading schemes…</div>
+  </div>
+</Base>
+
+<script>
+  import { fetchSheet } from '../lib/sheets';
+  import { renderSchemeCard, type SchemeRow } from '../lib/cards';
+  import { showEmpty, showError, parseDate, todayStart } from '../lib/dom';
+
+  const root = document.querySelector<HTMLElement>('[data-grid]')!;
+  fetchSheet<SchemeRow>('schemes')
+    .then((rows) => {
+      const today = todayStart();
+      const active = rows.filter((r) => {
+        if (!r['Scheme Name']) return false;
+        const exp = parseDate(r.ExpiryDate);
+        return !exp || exp.getTime() >= today.getTime();
+      });
+      if (active.length === 0) { showEmpty(root, 'No active schemes right now — check back soon.'); return; }
+      root.innerHTML = '';
+      for (const r of active) root.appendChild(renderSchemeCard(r));
+    })
+    .catch((e) => showError(root, e));
+</script>
