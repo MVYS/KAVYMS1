@@ -14,6 +14,11 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+# Opt JavaScript actions into Node.js 24 ahead of the June 2 2026 forced switch.
+# Silences the deprecation warning for actions/checkout, setup-node, upload-artifact, etc.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   build:
     runs-on: ubuntu-latest
